@@ -51,6 +51,24 @@ suite('DatabaseSync() constructor', () => {
     });
   });
 
+  test('throws if the database location is an object with an unparseable href', (t) => {
+    t.assert.throws(() => {
+      new DatabaseSync({ href: 'zzz' });
+    }, {
+      code: 'ERR_INVALID_ARG_TYPE',
+      message: 'The "path" argument must be a string, Uint8Array, or URL without null bytes.',
+    });
+  });
+
+  test('propagates an exception thrown by the href getter', (t) => {
+    t.assert.throws(() => {
+      new DatabaseSync({ get href() { throw new RangeError('boom'); } });
+    }, {
+      name: 'RangeError',
+      message: 'boom',
+    });
+  });
+
   test('throws if options is provided but is not an object', (t) => {
     t.assert.throws(() => {
       new DatabaseSync('foo', null);
